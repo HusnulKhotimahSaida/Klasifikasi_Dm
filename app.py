@@ -17,7 +17,8 @@ if not os.path.exists(MODEL_PATH):
 # Load model & scaler
 # =============================
 model = joblib.load(MODEL_PATH)
-scaler = joblib.load("scaler.pkl")  # scaler di GitHub
+scaler = joblib.load("scaler_4features.pkl")
+
 
 # =============================
 # Konfigurasi halaman
