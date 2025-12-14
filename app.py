@@ -82,21 +82,37 @@ else:
 
     if file is not None:
         df = pd.read_csv(file)
-        st.write("📄 Data CSV:")
+        st.write("📄 Data CSV (asli):")
         st.dataframe(df.head())
 
-        df_scaled = scaler.transform(df)
-        predictions = model.predict(df_scaled)
-        probabilities = model.predict_proba(df_scaled)[:, 1]
+        # =============================
+        # PILIH & URUTKAN KOLOM (PENTING)
+        # =============================
+        required_cols = ["age", "income", "credit_score", "total_spent"]
 
-        df["prediction"] = predictions
-        df["probability"] = probabilities
+        if not all(col in df.columns for col in required_cols):
+            st.error(
+                "CSV tidak sesuai format. Kolom wajib: "
+                "age, income, credit_score, total_spent"
+            )
+        else:
+            df_model = df[required_cols]  # urutan dijamin benar
 
-        st.markdown("### ✅ Hasil Prediksi")
-        st.dataframe(df)
+            # Scaling
+            df_scaled = scaler.transform(df_model)
 
-        st.download_button(
-            "⬇️ Download Hasil Prediksi",
-            df.to_csv(index=False),
-            file_name="hasil_prediksi_subscription.csv"
-        )
+            # Prediksi
+            predictions = model.predict(df_scaled)
+            probabilities = model.predict_proba(df_scaled)[:, 1]
+
+            df["prediction"] = predictions
+            df["probability"] = probabilities
+
+            st.markdown("### ✅ Hasil Prediksi")
+            st.dataframe(df)
+
+            st.download_button(
+                "⬇️ Download Hasil Prediksi",
+                df.to_csv(index=False),
+                file_name="hasil_prediksi_subscription.csv"
+            )
