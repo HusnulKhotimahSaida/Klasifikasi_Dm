@@ -7,7 +7,7 @@ import gdown
 # =============================
 # Download MODEL dari Google Drive (karena besar)
 # =============================
-MODEL_URL = "https://drive.google.com/uc?id=FILE_ID_MODEL_KAMU"
+MODEL_URL = "https://drive.google.com/uc?id=1sK1wrgbOJtuxGXHwBZayAI3427EgL3N-"
 MODEL_PATH = "rf_subscription_model.pkl"
 
 if not os.path.exists(MODEL_PATH):
