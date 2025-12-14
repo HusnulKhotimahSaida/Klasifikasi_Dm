@@ -5,23 +5,22 @@ import os
 import gdown
 
 # =============================
-# Download MODEL dari Google Drive (karena besar)
+# DOWNLOAD MODEL DARI GOOGLE DRIVE
 # =============================
 MODEL_URL = "https://drive.google.com/uc?id=1sK1wrgbOJtuxGXHwBZayAI3427EgL3N-"
-MODEL_PATH = "rf_subscription_model.pkl"
+MODEL_PATH = "rf_subscription_model_4features.pkl"
 
 if not os.path.exists(MODEL_PATH):
     gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
 
 # =============================
-# Load model & scaler
+# LOAD MODEL & SCALER
 # =============================
 model = joblib.load(MODEL_PATH)
 scaler = joblib.load("scaler_4features.pkl")
 
-
 # =============================
-# Konfigurasi halaman
+# KONFIGURASI HALAMAN
 # =============================
 st.set_page_config(
     page_title="Prediksi Subscription Pelanggan",
@@ -46,10 +45,10 @@ mode = st.radio(
 if mode == "Input Manual":
     st.subheader("🧾 Input Data Pelanggan")
 
-    age = st.number_input("Umur", min_value=0, max_value=100, step=1)
-    income = st.number_input("Pendapatan", min_value=0.0, step=1000.0)
+    age = st.number_input("Umur (age)", min_value=0, max_value=100, step=1)
+    income = st.number_input("Pendapatan (income)", min_value=0.0, step=1000.0)
     credit_score = st.number_input("Credit Score", min_value=300, max_value=850, step=1)
-    total_spent = st.number_input("Total Pengeluaran", min_value=0.0, step=1000.0)
+    total_spent = st.number_input("Total Pengeluaran (total_spent)", min_value=0.0, step=1000.0)
 
     if st.button("🔍 Prediksi"):
         input_df = pd.DataFrame([{
@@ -74,7 +73,7 @@ if mode == "Input Manual":
 # =============================
 else:
     st.subheader("📂 Upload File CSV")
-    st.info("CSV harus memiliki kolom: age, income, credit_score, total_spent")
+    st.info("CSV WAJIB memiliki kolom: age, income, credit_score, total_spent")
 
     file = st.file_uploader(
         "Upload file CSV untuk mulai prediksi",
@@ -86,23 +85,18 @@ else:
         st.write("📄 Data CSV (asli):")
         st.dataframe(df.head())
 
-        # =============================
-        # PILIH & URUTKAN KOLOM (PENTING)
-        # =============================
         required_cols = ["age", "income", "credit_score", "total_spent"]
 
         if not all(col in df.columns for col in required_cols):
             st.error(
-                "CSV tidak sesuai format. Kolom wajib: "
+                "❌ Format CSV salah.\n\nKolom wajib:\n"
                 "age, income, credit_score, total_spent"
             )
         else:
-            df_model = df[required_cols]  # urutan dijamin benar
+            df_model = df[required_cols]
 
-            # Scaling
             df_scaled = scaler.transform(df_model)
 
-            # Prediksi
             predictions = model.predict(df_scaled)
             probabilities = model.predict_proba(df_scaled)[:, 1]
 
